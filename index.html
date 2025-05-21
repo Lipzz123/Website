@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clover.web</title>
+<style>    
+  /* Reset and basics */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #a8e063 30%, #56ab2f 100%);
+    color: #2b3e27;
+    margin: 0;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .container {
+    background: #f0f9f4;
+    border-radius: 25px;
+    padding: 40px 50px 50px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow:
+      0 12px 24px rgba(34, 49, 23, 0.15),
+      inset 0 0 100px  #c4f0b2;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 600px;
+  }
+  /* subtle leaf shapes in corners */
+  .container::before,
+  .container::after {
+    content: "";
+    position: absolute;
+    background: #a9d18e;
+    border-radius: 50% 50% 0 50%;
+    opacity: 0.25;
+    filter: drop-shadow(0 0 3px #629144);
+    pointer-events: none;
+  }
+  .container::before {
+    width: 220px;
+    height: 220px;
+    top: -80px;
+    left: -80px;
+    transform: rotate(45deg);
+  }
+  .container::after {
+    width: 160px;
+    height: 160px;
+    bottom: -50px;
+    right: -50px;
+    transform: rotate(-45deg);
+  }
+  h1 {
+    text-align: center;
+    color: #3c522b;
+    margin-bottom: 2rem;
+    font-weight: 900;
+    font-family: 'Georgia', serif;
+    letter-spacing: 0.14em;
+    text-shadow: 1px 1px 3px #a6c88c;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  label {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #587e46;
+    font-size: 1rem;
+  }
+  input[type="text"],
+  input[type="password"] {
+    padding: 12px 14px;
+    border: 2.5px solid #a9d18e;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background: #e7f2db;
+    color: #405c2e;
+    font-weight: 600;
+  }
+  input[type="text"]::placeholder,
+  input[type="password"]::placeholder {
+    color: #8a9a6f;
+    font-style: italic;
+  }
+  input[type="text"]:focus,
+  input[type="password"]:focus {
+    border-color: #51792b;
+    outline: none;
+    box-shadow: 0 0 8px 2px #9bca72b0;
+    background: #f0f9e9;
+  }
+  button {
+    background-color: #557a24;
+    color: white;
+    font-weight: 700;
+    padding: 14px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    text-shadow: 0 0 1px #49621b;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  button:hover {
+    background-color: #3f5918;
+    box-shadow: 0 5px 15px #3f591833;
+  }
+  .toggle-link {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: #49621b;
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    font-family: 'Georgia', serif;
+  }
+  .toggle-link:hover {
+    text-decoration: underline;
+    color: #3f5918;
+  }
+  .message {
+    margin-top: 0.6rem;
+    font-weight: 700;
+    color: #b33115; /* dark red error */
+    text-align: center;
+    min-height: 1.2em; /* space for message */
+  }
+  .message.success {
+    color: #27632a;
+  }
+
+  /* Dashboard styles */
+  #dashboard {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+  }
+  #dashboard-header {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  #dashboard-header h2 {
+    font-family: 'Georgia', serif;
+    color: #3c522b;
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  #dashboard-header p {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #557a24dd;
+  }
+  #dashboard-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    flex-grow: 1;
+  }
+  @media (min-width: 450px) {
+    #dashboard-content {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .card {
+    background: #d7f0b4;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(63, 89, 24, 0.25);
+    padding: 20px 22px;
+    color: #3a5224;
+    font-family: 'Georgia', serif;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: default;
+    user-select: none;
+    transition: box-shadow 0.3s ease;
+  }
+  .card:hover {
+    box-shadow: 0 15px 35px rgba(63, 89, 24, 0.4);
+  }
+  .card-icon {
+    font-size: 3.5rem;
+    margin-bottom: 18px;
+  }
+  .card-title {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+  }
+  .card-content {
+    font-weight: 500;
+    font-size: 1rem;
+    color: #405c2e;
+ Logout⁴ }
+  /* Logout button on dashboard footer */
+  #dashboard-logout-btn {
+    margin-top: 30px;
+    align-self: center;
+    background-color: #b33115;
+    font-size: 1.2rem;
+    padding: 14px 36px;
+    border-radius: 30px;
+    font-weight: 700;
+    box-shadow: 0 5px 15px rgba(179, 49, 21, 0.8);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+  #dashboard-logout-btn:hover {
+    background-color: #7b210f;
+    box-shadow: 0 8px 25px rgba(123, 33, 15, 0.9);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 id="title">Login Pengguna Clover</h1>
+
+  <!-- Login form -->
+  <form id="login-form" aria-label="Login form">
+    <label for="login-username">Nama Pengguna</label>
+    <input type="text" id="login-username" autocomplete="username" placeholder="Nama Pengguna" required />
+    
+    <label for="login-password">Sandi</label>
+    <input type="password" id="login-password" autocomplete="current-password" placeholder="Sandi" required />
+    
+    <button type="submit">Masuk</button>
+    <div class="message" id="login-message" role="alert" aria-live="polite"></div>
+  </form>
+
+  <!-- Registration form -->
+  <form id="register-form" aria-label="Registration form" style="display:none;">
+    <label for="register-username">Nama Pengguna</label>
+    <input type="text" id="register-username" autocomplete="username" placeholder="Buat Nama Pengguna" required />
+    
+    <label for="register-password">Sandi</label>
+    <input type="password" id="register-password" autocomplete="new-password" placeholder="Buat Sandi" required />
+    
+    <button type="submit">Daftar</button>
+    <div class="message" id="register-message" role="alert" aria-live="polite"></div>
+  </form>
+
+  <div class="toggle-link" id="toggle-link" role="button" tabindex="0" aria-pressed="false" aria-label="Toggle between login and register">
+    Tidak Punya Akun? Daftar Disini.
+  </div>
+
+  <!-- Dashboard Section -->
+  <section id="dashboard" role="main" aria-label="User dashboard">
+    <header id="dashboard-header">
+      <h2 id="welcome-text">Selamat Datang</h2>
+      <p>Menu Utama</p>
+    </header>
+    <div id="dashboard-content" aria-live="polite" aria-atomic="true">
+      <article class="card" tabindex="0" aria-label="My Plants summary">
+        <div class="card-icon" aria-hidden="true">🌿</div>
+        <div class="card-title">Pemantauan</div>
+        <div class="card-content">Pantau tanaman yang anda tanam</div>
+      </article>
+      <article class="card" tabindex="0" aria-label="Growth Stats summary">
+        <div class="card-icon" aria-hidden="true">📈</div>
+        <div class="card-title">Pertumbuhan</div>
+        <div class="card-content">Pantau pertumbuhan tanaman anda</div>
+      </article>
+      <article class="card" tabindex="0" aria-label="Plant Care Tips">
+        <div class="card-icon" aria-hidden="true">🌸</div>
+        <div class="card-title">Jadwal</div>
+        <div class="card-content">Jadwal penyiraman tanaman anda</div>
+      </article>
+      <article class="card" tabindex="0" aria-label="Weather Forecast">
+        <div class="card-icon" aria-hidden="true">👤</div>
+        <div class="card-title">About Us</div>
+        <div class="card-content">Visi Kami 
+        </div>
+      </article>
+    </div>
+    <button id="dashboard-logout-btn" aria-label="Logout from dashboard">Keluar</button>
+  </section>
+</div>
+
+<script>
+  const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
+  const loginMessage = document.getElementById('login-message');
+  const registerMessage = document.getElementById('register-message');
+  const dashboard = document.getElementById('dashboard');
+  const welcomeText = document.getElementById('welcome-text');
+  const logoutBtn = document.getElementById('dashboard-logout-btn');
+  const toggleLink = document.getElementById('toggle-link');
+  const title = document.getElementById('title');
+
+  // Show login or register form toggling
+  toggleLink.addEventListener('click', () => {
+    if (loginForm.style.display !== 'none') {
+      loginForm.style.display = 'none';
+      registerForm.style.display = 'flex';
+      dashboard.style.display = 'none';
+      title.textContent = 'Daftar Akun Clover';
+      toggleLink.textContent = 'Sudah Punya Akun? Login Disini.';
+    } else {
+      loginForm.style.display = 'flex';
+      registerForm.style.display = 'none';
+      dashboard.style.display = 'none';
+      title.textContent = 'Login Pengguna Clover';
+      toggleLink.textContent = "Tidak Punya Akun? Daftar Disini.";
+    }
+    clearMessages();
+    clearInputs();
+  });
+
+  // Clear messages helper
+  function clearMessages() {
+    loginMessage.textContent = '';
+    loginMessage.classList.remove('success');
+    registerMessage.textContent = '';
+    registerMessage.classList.remove('success');
+  }
+  // Clear inputs helper
+  function clearInputs() {
+    loginForm.reset();
+    registerForm.reset();
+  }
+
+  const STORAGE_KEY = 'simple-login-users';
+
+  function getUsers() {
+    const usersJSON = localStorage.getItem(STORAGE_KEY);
+    return usersJSON ? JSON.parse(usersJSON) : {};
+  }
+  function saveUsers(users) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+  }
+  function saveSession(username) {
+    localStorage.setItem('simple-login-session', username);
+  }
+  function getSession() {
+    return localStorage.getItem('simple-login-session');
+  }
+  function clearSession() {
+    localStorage.removeItem('simple-login-session');
+  }
+
+  registerForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    clearMessages();
+    const username = document.getElementById('register-username').value.trim();
+    const password = document.getElementById('register-password').value;
+    if (!username || !password) {
+      registerMessage.textContent = 'Tolong Diisi.';
+      return;
+    }
+    const users = getUsers();
+    if (users[username]) {
+      registerMessage.textContent = 'Nama Pengguna Sudah Digunakan.Coba Lagi.';
+      return;
+    }
+    users[username] = password;
+    saveUsers(users);
+    registerMessage.textContent = 'Akun Sukses Terdaftar';
+    registerMessage.classList.add('success');
+    registerForm.reset();
+  });
+
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    clearMessages();
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+    if (!username || !password) {
+      loginMessage.textContent = 'Sandi Sudah Digunakan.Coba Lagi.';
+      return;
+    }
+    const users = getUsers();
+    if (!users[username] || users[username] !== password) {
+      loginMessage.textContent = 'Password Atau Sandi Tidak Valid.';
+      return;
+    }
+    saveSession(username);
+    showDashboard(username);
+  });
+
+  function showDashboard(username) {
+    loginForm.style.display = 'none';
+    registerForm.style.display = 'none';
+    dashboard.style.display = 'flex';
+    title.textContent = 'Home Page';
+    toggleLink.style.display = 'none';
+    welcomeText.textContent = `Selamat Datang, ${username}!`;
+    clearMessages();
+    clearInputs();
+  }
+
+  logoutBtn.addEventListener('click', () => {
+    clearSession();
+    dashboard.style.display = 'none';
+    loginForm.style.display = 'flex';
+    title.textContent = 'Login';
+    toggleLink.style.display = 'block';
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const sessionUser = getSession();
+    if (sessionUser) {
+      showDashboard(sessionUser);
+    }
+  });
+</script>
+</body>
+</html>
